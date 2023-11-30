@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: database
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        component: database
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:14
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: database-secret
+              key: password
+              optional: false
+        - name: PGDATA
+          value: /mnt/data/pgdata
+          volumeMounts:
+           - name: database-data-volume
+             mountPath: /mnt/data
+          ports: 
+          - containerPort: 5432        
+        volumes:
+        - name: database-data-volume
+          persistentVolumeClaim:
+            claimName: database-volume-claim
+---
+
+apiVersion: v1
+ kind: Service
+metadata:
+  name: database-service
+spec:
+  selector:
+    component: database
+  ports:
+    - port: 5432
+
+        
+        
