@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mboard-api-config
+data:
+  pg-host: database-service
+  cache-host: memcache-service

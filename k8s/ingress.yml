@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: main-ingress
+spec:
+  ingressClassName: nginx
+  defaultBackend:
+    service:
+      name: frontend-service
+      port:
+        number: 80
+  rules:
+    - http:
+        paths: 
+          - path: /api/
+            pathType: Prefix
+            backend:
+              service:
+                name: mboard-api-service
+                port:
+                  number: 4567

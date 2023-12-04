@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      component: frontend
+  template:
+    metadata:
+      labels:
+        component: frontend
+    spec:
+      initContainers:
+        - name: code-loader
+          image: bitnami/git:2-debian-10
+          command: 
+            - git
+          args: 
+            - clone
+            - https://github.com/johnnyb/k8s-example-frontend.git
+            - /tmp/code/
+          volumeMounts:
+            - name: website-data
+              mountPath: /tmp/code 
+      containers:
+        - name: webserver
+          image: httpd:2.4
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: website-data
+              mountPath: /usr/local/apache2/htdocs
+      volumes:
+        - name: website-data
+          emptyDir: {} 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  selector:
+    component: frontend
+  ports:
+    - port: 80

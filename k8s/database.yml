@@ -15,30 +15,29 @@ spec:
         component: database
     spec:
       containers:
-      - name: postgres
-        image: postgres:14
-        env:
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: database-secret
-              key: password
-              optional: false
-        - name: PGDATA
-          value: /mnt/data/pgdata
+        - name: postgres
+          image: postgres:14
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom: 
+                secretKeyRef:
+                  name: database-secret
+                  key: password
+                  optional: false
+            - name: PGDATA 
+              value: /mnt/data/pgdata
           volumeMounts:
-           - name: database-data-volume
-             mountPath: /mnt/data
-          ports: 
-          - containerPort: 5432        
-        volumes:
+            - name: database-data-volume
+              mountPath: /mnt/data
+          ports:
+            - containerPort: 5432
+      volumes:
         - name: database-data-volume
-          persistentVolumeClaim:
+          persistentVolumeClaim: 
             claimName: database-volume-claim
 ---
-
 apiVersion: v1
- kind: Service
+kind: Service
 metadata:
   name: database-service
 spec:
@@ -46,6 +45,3 @@ spec:
     component: database
   ports:
     - port: 5432
-
-        
-        

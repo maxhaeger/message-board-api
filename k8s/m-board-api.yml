@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: mboard-api-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: mboard-api
+  template:
+    metadata:
+      labels:
+        component: mboard-api
+    spec:
+      containers:
+        - name: mboard-api-container
+          image: maaqz/mgross:1.0.0
+          ports:
+            - containerPort: 4567
+          env:
+            - name: APP_ENV
+              value: production
+            - name: PG_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mboard-api-config
+                  key: pg-host
+            - name: PG_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: password
+            - name: PG_CONN_STR
+              value: "host=$(PG_HOST) user=postgres password=$(PG_PASS)"
+            - name: CACHE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mboard-api-config
+                  key: cache-host
+            - name: CACHE_CONN_STR
+              value: "$(CACHE_HOST):11211"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mboard-api-service
+spec:
+  selector:
+    component: mboard-api
+  ports:
+    - port: 4567
