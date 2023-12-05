@@ -12,7 +12,7 @@ provider "linode" {
 }
 
 resource "linode_lke_cluster" "message-board-cluster" {
-    label       = "message-board-api"
+    label       = "message-board-lke"
     k8s_version = "1.27"
     region      = "eu-central"
     tags        = ["prod"]

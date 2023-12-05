@@ -15,6 +15,7 @@ spec:
       containers:
         - name: mboard-api-container
           image: maaqz/mgross:1.0.0
+          imagePullPolicy: Always
           ports:
             - containerPort: 4567
           env:

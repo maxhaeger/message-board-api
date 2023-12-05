@@ -15,15 +15,15 @@ spec:
       initContainers:
         - name: code-loader
           image: bitnami/git:2-debian-10
-          command: 
+          command:
             - git
-          args: 
+          args:
             - clone
             - https://github.com/johnnyb/k8s-example-frontend.git
             - /tmp/code/
           volumeMounts:
             - name: website-data
-              mountPath: /tmp/code 
+              mountPath: /tmp/code
       containers:
         - name: webserver
           image: httpd:2.4
@@ -34,7 +34,7 @@ spec:
               mountPath: /usr/local/apache2/htdocs
       volumes:
         - name: website-data
-          emptyDir: {} 
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service

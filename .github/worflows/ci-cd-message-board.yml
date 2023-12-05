@@ -1,0 +1,14 @@
+name: "Infrastructure Build"
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths:
+      - terraform/**
+  pull_request:
+    branches: [ "main" ]
+    types: [ closed ]
+    paths:
+      - terraform/**
+      - namespace/**
