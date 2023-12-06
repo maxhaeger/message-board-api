@@ -5,12 +5,12 @@ on:
     branches:
       - main
   workflow_dispatch:
-  
+
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_DEFAULT_REGION: eu-central-1
-  LINODE_TOKEN : ${{ secrets.LINODE_TOKEN }}
+  LINODE_TOKEN: ${{ secrets.LINODE_TOKEN }}
 
 jobs:
   deploy-infra:
@@ -30,7 +30,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
