@@ -5,7 +5,12 @@ on:
     branches:
       - main
   workflow_dispatch:
-
+  
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: eu-central-1
+  LINODE_TOKEN : ${{ secrets.LINODE_TOKEN }}
 
 jobs:
   deploy-infra:
@@ -16,7 +21,6 @@ jobs:
       run:
         shell: bash
         working-directory: ./terraform
-
 
     steps:
       - name: Checkout
@@ -30,14 +34,13 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1
 
       - name: Terraform Init
         run: terraform init
 
       - name: Terraform Apply
         env:
-          TF_VAR_linode_token: ${{ secrets.linode_token }}
+          TF_VAR_linode_token: ${{ secrets.LINODE_TOKEN }}
         run: terraform apply --auto-approve
 
       - name: Set up Kubernetes
@@ -48,6 +51,11 @@ jobs:
         with:
           version: "latest"
 
+      - name: Load KubeConfig from Linode
+        uses: mavieth/linode-authenticator@master
+        with:
+          LINODE_TOKEN: ${{ secrets.LINODE_TOKEN }}
+          CLUSTER_NAME: linode1234
 
       - name: Deploy Helm Charts
         run: |
