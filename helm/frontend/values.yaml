@@ -1,0 +1,9 @@
+frontend:
+  name: frontend
+  imagename1: bitnami/git
+  imagetag1: 2-debian-10
+  imagename2: httpd
+  imagetag2: 2.4
+  volume: website-data
+  port: 80
+  replica: 2
