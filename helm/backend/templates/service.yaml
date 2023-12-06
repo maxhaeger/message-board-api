@@ -6,7 +6,7 @@ spec:
   selector:
     component: {{ .Values.api.name }}
   ports:
-    - port: {{ .Values.api.port}}
+    - port: {{ .Values.api.port }}
 ---
 apiVersion: v1
 kind: Service
@@ -14,9 +14,9 @@ metadata:
   name: "{{ .Values.cache.name }}-service"
 spec:
   selector:
-    component: {{ .Values.cache.name }}
+    component: {{ .Values.cache.name}}
   ports:
-    - port: {{ .Values.cache.port }}
+    - port: {{ .Values.cache.port}}
 ---
 apiVersion: v1
 kind: Service

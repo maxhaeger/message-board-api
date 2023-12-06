@@ -1,16 +1,60 @@
-name: "Infrastructure Build"
+name: Deploy to Kubernetes Cluster
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
+  workflow_dispatch:
+
 
 jobs:
-  Infrastructure:
+  deploy-infra:
+    name: Provide Linode-Kubernetes
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./terraform
+
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: 
+      - name: Setup Terraform CLI
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+          TF_VAR_linode_token: ${{ secrets.linode_token }}
+        run: terraform init
+
+      - name: Terraform Apply
+        env:
+          TF_VAR_linode_token: ${{ secrets.linode_token }}
+        run: terraform apply --auto-approve
+
+      - name: Set up Kubernetes
+        uses: azure/setup-kubectl@v3
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: "latest"
+
+
+      - name: Deploy Helm Charts
+        run: |
+          cd ..
+          helm install backend ./message-board-api/helm/backend
+          helm install frontend ./message-board-api/helm/frontend
+          helm install environment ./message-board-api/helm/environment
+
+      - name: Deploy nginx Ingress Controller
+        run: |
+          sleep 60
+          kubectl apply -f https://bit.ly/ingress_nginx_1_2_0

@@ -6,4 +6,5 @@ frontend:
   imagetag2: 2.4
   volume: website-data
   port: 80
+  api-port: 4567
   replica: 2

@@ -6,15 +6,15 @@ spec:
   replicas: 3
   selector:
     matchLabels:
-      component: { { .Values.api.name } }
+      component: {{ .Values.api.name }}
   template:
     metadata:
       labels:
-        component: { { .Values.api.name } }
+        component: {{ .Values.api.name }}
     spec:
       containers:
         - name: "{{ .Values.api.name }}-container"
-          image: "{{ .Values.image.name }}:{{ .Values.image.tag}}"
+          image: "{{ .Values.api.image.name }}:{{ .Values.api.image.tag}}"
           imagePullPolicy: Always
           ports:
             - containerPort: 4567
@@ -49,17 +49,17 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      component: { { .Values.cache.name } }
+      component: {{ .Values.cache.name }}
   template:
     metadata:
       labels:
-        component: { { .Values.cache.name } }
+        component: {{ .Values.cache.name }}
     spec:
       containers:
         - name: memcache
           image: "{{ .Values.cache.imagename }}:{{ .Values.cache.imagetag}}"
           ports:
-            - containerPort: { { .Values.cache.port } }
+            - containerPort: {{ .Values.cache.port }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -69,16 +69,16 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      component: { { .Values.database.name } }
+      component: {{ .Values.database.name }}
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        component: { { .Values.database.name } }
+        component: {{ .Values.database.name }}
     spec:
       containers:
-        - name: { { .Values.database.vendor } }
+        - name: {{ .Values.database.vendor }}
           image: "{{ .Values.database.imagename }}:{{ .Values.database.imagetag }}"
           env:
             - name: POSTGRES_PASSWORD
@@ -93,7 +93,7 @@ spec:
             - name: "{{ .Values.database.name }}-data-volume"
               mountPath: /mnt/data
           ports:
-            - containerPort: { { .Values.database.port } }
+            - containerPort: {{ .Values.database.port }}
       volumes:
         - name: "{{ .Values.database.name }}-data-volume"
           persistentVolumeClaim:
