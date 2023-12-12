@@ -43,3 +43,4 @@ post-deploy:
   stage: post-deploy
   script:
     - kubectl apply -f https://bit.ly/ingress_nginx_1_2_0
+    - kubectl get svc -l app.kubernetes.io/name=ingress-nginx -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}'
