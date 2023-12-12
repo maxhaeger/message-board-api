@@ -15,8 +15,6 @@ stages:
   - deploy
   - post-deploy
 
-variables:
-  TF_VAR_linode_token: "1df91dc19a5667440497c3dd95562876fa914898b97c62886126cb68f96e24ad"
 
 setup:
   stage: setup
