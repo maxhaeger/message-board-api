@@ -29,9 +29,11 @@ setup:
 
 deploy:
   stage: deploy
-  image: alpine/helm:3.6.3  # Verwenden Sie ein Docker-Image, das Helm und Bash enthält
+  image: 
+    name: alpine/helm:3.6.3  # Use a Docker image that includes Helm
+    entrypoint: ["/bin/sh", "-c"]  # Override the entrypoint to use sh
   before_script:
-    - apk add --no-cache bash  # Fügen Sie Bash zum Image hinzu
+    - apk add --no-cache bash  # Add Bash to the image
   script:
     - bash import-kubeconfig.sh
     - sleep 5
