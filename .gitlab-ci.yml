@@ -34,7 +34,8 @@ deploy:
   before_script:
     - apk add --no-cache bash  # Add Bash to the image
   script:
-    - cd ./terraform   
+    - set -x  # Enable debugging
+    - cd ./terraform
     - bash import-kubeconfig.sh
     - sleep 5
     - cd ../helm
@@ -43,6 +44,7 @@ deploy:
     - helm install environment ./environment
   after_script:
     - sleep 60
+
 
 post-deploy:
   stage: post-deploy
