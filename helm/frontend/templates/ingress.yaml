@@ -6,9 +6,9 @@ spec:
   ingressClassName: nginx
   defaultBackend:
     service:
-      name: frontend-service
+      name: "{{ .Values.frontend.name }}-service"
       port:
-        number: 80
+        number: {{ .Values.frontend.port}}
   rules:
     - http:
         paths: 
@@ -16,6 +16,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: mboard-api-service
+                name: {{ .Values.frontend.service }}
                 port:
-                  number: 4567
+                  number: {{ .Values.frontend.apiPort }}

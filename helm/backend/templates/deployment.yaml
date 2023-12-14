@@ -95,6 +95,6 @@ spec:
           ports:
             - containerPort: {{ .Values.database.port }}
       volumes:
-        - name: "{{ .Values.database.name }}-data-volume }}"
+        - name: "{{ .Values.database.name }}-data-volume"
           persistentVolumeClaim:
             claimName: "{{ .Values.database.name }}-volume-claim"
