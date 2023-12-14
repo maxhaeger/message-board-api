@@ -1,71 +1,65 @@
-name: Deploy to Kubernetes Cluster
+name: Terraform Workflow
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+on: [push, pull_request]
 
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_DEFAULT_REGION: eu-central-1
-  LINODE_TOKEN: ${{ secrets.LINODE_TOKEN }}
+  TF_VAR_linode_token: ${{ secrets.TF_VAR_linode_token }}
+  LINODE_CLI_TOKEN: ${{ secrets.TF_VAR_linode_token }}
 
 jobs:
-  deploy-infra:
-    name: Provide Linode-Kubernetes
+  setup:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./terraform
-
+    container:
+      image: hashicorp/terraform:latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Setup Terraform CLI
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Apply
-        env:
-          TF_VAR_linode_token: ${{ secrets.LINODE_TOKEN }}
-        run: terraform apply --auto-approve
-
-      - name: Set up Kubernetes
-        uses: azure/setup-kubectl@v3
-
-      - name: Set up Helm
-        uses: azure/setup-helm@v3
-        with:
-          version: "latest"
-
-      - name: Load KubeConfig from Linode
-        uses: mavieth/linode-authenticator@master
-        with:
-          LINODE_TOKEN: ${{ secrets.LINODE_TOKEN }}
-          CLUSTER_NAME: linode1234
-
-      - name: Deploy Helm Charts
+      - name: Setup Terraform
         run: |
-          cd ..
-          helm install backend ./message-board-api/helm/backend
-          helm install frontend ./message-board-api/helm/frontend
-          helm install environment ./message-board-api/helm/environment
+          cd terraform
+          terraform init
+          terraform apply -auto-approve
 
-      - name: Deploy nginx Ingress Controller
+  deploy:
+    needs: setup
+    runs-on: ubuntu-latest
+    container:
+      image: alpine/k8s:1.25.16
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Deploy
         run: |
-          sleep 60
-          kubectl apply -f https://bit.ly/ingress_nginx_1_2_0
+          apk update
+          apk add py3-pip
+          mkdir -p ~/.kube
+          touch ~/.kube/config.lke
+          chmod 600 ~/.kube/config.lke
+          pip3 install linode-cli
+          configid=$(linode-cli lke clusters-list --text --no-header | awk '{print $1}')
+          config=$(linode-cli lke kubeconfig-view $configid --text --no-headers | base64 -d)
+          echo "$config" > ~/.kube/config.lke
+          export KUBECONFIG=~/.kube/config.lke
+          pwd
+          cd ./helm
+          helm install backend ./backend
+          helm install frontend ./frontend
+          helm install environment ./environment
+          kubectl get svc -l app.kubernetes.io/name=ingress-nginx -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}'
+
+  destroy:
+    needs: deploy
+    runs-on: ubuntu-latest
+    container:
+      image: hashicorp/terraform:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Destroy
+        run: |
+          cd terraform
+          terraform init
+          terraform destroy -auto-approve
+          echo "Infrastructure destroyed!"

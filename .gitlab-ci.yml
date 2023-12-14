@@ -47,9 +47,6 @@ deploy:
     - export KUBECONFIG=~/.kube/config.lke
     - pwd
     - cd ./helm
-    - helm uninstall backend ./backend
-    - helm uninstall frontend ./frontend
-    - helm uninstall environment ./environment
     - helm install backend ./backend
     - helm install frontend ./frontend
     - helm install environment ./environment
