@@ -40,10 +40,9 @@ deploy:
     - mkdir -p ~/.kube
     - touch ~/.kube/config.lke
     - pip3 install linode-cli
-    - config=$(linode-cli lke clusters-list --text --no-header | awk '{print $1}')
-    - cat $config >> ~/.kube/config.lke
+    - configid=$(linode-cli lke clusters-list --text --no-header | awk '{print $1}')
+    - config=$(linode-cli lke kubeconfig-view $configid --text --no-headers | base64 -d)
     - export KUBECONFIG=~/.kube/config.lke
-    - sleep 5
     - cd ../helm
     - helm install backend ./backend
     - helm install frontend ./frontend
