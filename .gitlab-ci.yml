@@ -11,6 +11,12 @@ setup:
   image:
     name: hashicorp/terraform:latest
   stage: setup
+
+  cache:
+    key: terraform
+    paths:
+      - .terraform
+
   script:
     - cd terraform
     - terraform init
