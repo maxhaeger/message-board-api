@@ -39,7 +39,7 @@ deploy:
   script:
     - pip3 install linode-cli
     - config=$(linode-cli lke clusters-list --text --no-header | awk '{print $1}')
-    - cat $config >> ~/.kube/config.lke
+    - cat $config > ~/.kube/config.lke
     - export KUBECONFIG=~/.kube/config.lke
     - sleep 5
     - cd ../helm
