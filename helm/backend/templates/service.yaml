@@ -17,6 +17,7 @@ spec:
     component: {{ .Values.cache.name}}
   ports:
     - port: {{ .Values.cache.port}}
+  internalTrafficPolicy: Local
 ---
 apiVersion: v1
 kind: Service

@@ -42,11 +42,10 @@ spec:
               value: "$(CACHE_HOST):11211"
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: "{{ .Values.cache.name }}-deployment"
 spec:
-  replicas: 1
   selector:
     matchLabels:
       component: {{ .Values.cache.name }}
