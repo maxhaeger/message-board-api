@@ -15,7 +15,6 @@ stages:
   - deploy
   - post-deploy
 
-
 setup:
   stage: setup
   script:
@@ -29,24 +28,31 @@ setup:
 
 deploy:
   stage: deploy
-  image: 
-    name: alpine/k8s:1.25.16  # Use a Docker image that includes Helm
-    entrypoint: ["/bin/sh", "-c"]  # Override the entrypoint to use sh
+  image:
+    name: alpine/k8s:1.25.16 # Use a Docker image that includes Helm
+    entrypoint:
+      - /usr/bin/env
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
   before_script:
-    - apk add --no-cache bash  # Add Bash to the image
+    - apk update
+    - apk add py3-pip
   script:
-    - cd ./terraform  
-    - bash import-kubeconfig.sh
+    - sudo apk add pip3
+    - pip3 install linode-cli
+    - config=$(linode-cli lke clusters-list --text --no-header | awk '{print $1}')
+    - cat $config >> ~/.kube/config.lke
+    - export KUBECONFIG=~/.kube/config.lke
     - sleep 5
     - cd ../helm
     - helm install backend ./backend
     - helm install frontend ./frontend
     - helm install environment ./environment
-  after_script:
-    - sleep 60
+  variables:
+    AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+    LINODE_CLI_TOKEN: $TF_VAR_linode_token
 
 post-deploy:
   stage: post-deploy
   script:
-    - kubectl apply -f https://bit.ly/ingress_nginx_1_2_0
     - kubectl get svc -l app.kubernetes.io/name=ingress-nginx -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}'
