@@ -44,7 +44,7 @@ deploy:
     - config=$(linode-cli lke kubeconfig-view $configid --text --no-headers | base64 -d)
     - export KUBECONFIG=~/.kube/config.lke
     - pwd
-    - cd ../helm
+    - cd ./helm
     - helm install backend ./backend
     - helm install frontend ./frontend
     - helm install environment ./environment
