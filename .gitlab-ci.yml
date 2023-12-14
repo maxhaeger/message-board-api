@@ -47,6 +47,9 @@ deploy:
     - export KUBECONFIG=~/.kube/config.lke
     - pwd
     - cd ./helm
+    - helm uninstall backend ./backend
+    - helm uninstall frontend ./frontend
+    - helm uninstall environment ./environment
     - helm install backend ./backend
     - helm install frontend ./frontend
     - helm install environment ./environment
@@ -62,6 +65,7 @@ destroy:
     - cd terraform
     - terraform init
     - terraform destroy -auto-approve
+    - echo "Infrastructure destroyed!"
   variables:
     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
