@@ -50,7 +50,6 @@ deploy:
     - helm install backend ./backend
     - helm install frontend ./frontend
     - helm install environment ./environment
-    - kubectl get svc -l app.kubernetes.io/name=ingress-nginx -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}'
   variables:
     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
