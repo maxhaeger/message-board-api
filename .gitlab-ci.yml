@@ -37,9 +37,11 @@ deploy:
     - apk update
     - apk add py3-pip
   script:
+    - mkdir -p ~/.kube
+    - touch ~/.kube/config.lke
     - pip3 install linode-cli
     - config=$(linode-cli lke clusters-list --text --no-header | awk '{print $1}')
-    - cat $config > ~/.kube/config.lke
+    - cat $config >> ~/.kube/config.lke
     - export KUBECONFIG=~/.kube/config.lke
     - sleep 5
     - cd ../helm
