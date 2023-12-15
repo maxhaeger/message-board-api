@@ -74,9 +74,14 @@ destroy:
   stage: destroy
   image:
     name: hashicorp/terraform:light
+
+  before_script:
+  - apk update
+  - apk add py3-pip
+  - pip3 install linode-cli
   script: 
     - pwd 
-    - bash cleanup.sh
+    - sh cleanup.sh
     - cd terraform
     - terraform init
     - terraform destroy -auto-approve
@@ -85,3 +90,4 @@ destroy:
     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
     TF_VAR_linode_token: $TF_VAR_linode_token
+    LINODE_CLI_TOKEN: $TF_VAR_linode_token
