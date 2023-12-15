@@ -109,14 +109,19 @@ cleanup:
   script:
   - pip install linode-cli
   - |
-    for nb in $(linode-cli nodebalancers list --text --no-header | awk '{print $1}'); do
-      linode-cli nodebalancers delete $nb
-    done
-
+    nbs=$(linode-cli nodebalancers list --text --no-header | awk '{print $1}')
+    if [ -n "$nbs" ]; then
+      for nb in $nbs; do
+        linode-cli nodebalancers delete $nb
+      done
+    fi
   - |
-    for vol in $(linode-cli volumes list --text --no-header | awk '{print $1}'); do
-      linode-cli volumes delete $vol
-    done
-    - deactivate
+    vols=$(linode-cli volumes list --text --no-header | awk '{print $1}')
+    if [ -n "$vols" ]; then
+      for vol in $vols; do
+        linode-cli volumes delete $vol
+      done
+    fi
+  - deactivate
   variables:
     LINODE_CLI_TOKEN: $TF_VAR_linode_token
