@@ -66,6 +66,12 @@ deploy:
       else
         helm install environment ./environment
       fi
+    - |
+      if helm status argocd >/dev/null 2>&1; then
+        helm upgrade argocd ./argocd --namespace argocd
+      else
+        helm install argocd ./argocd --namespace argocd
+      fi
   variables:
     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
@@ -97,9 +103,8 @@ cleanup:
   before_script:
     - apk update
     - apk add py3-pip
-    - pip3 install linode-cli
-
   script:
+  - pip3 install linode-cli
   - |
     #!/bin/bash
     for nb in $(linode-cli nodebalancers list --text --no-header | awk '{print $1}'); do
