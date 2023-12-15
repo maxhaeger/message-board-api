@@ -57,7 +57,9 @@ deploy:
 
 destroy:
   stage: destroy
-  script:
+  script: 
+    - pwd 
+    - bash cleanup.sh
     - cd terraform
     - terraform init
     - terraform destroy -auto-approve

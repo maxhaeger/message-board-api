@@ -14,8 +14,6 @@ export KUBECONFIG=~/.kube/config.lke
 
 #!/bin/bash
 set -e
-
-# Überprüfen, ob die benötigten Befehle existieren
 command -v linode-cli >/dev/null 2>&1 || { echo >&2 "linode-cli ist nicht installiert.  Abbruch."; exit 1; }
 command -v base64 >/dev/null 2>&1 || { echo >&2 "base64 ist nicht installiert.  Abbruch."; exit 1; }
 
