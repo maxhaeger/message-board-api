@@ -47,9 +47,24 @@ deploy:
     - export KUBECONFIG=~/.kube/config.lke
     - pwd
     - cd ./helm
-    - helm install backend ./backend
-    - helm install frontend ./frontend
-    - helm install environment ./environment
+    - |
+      if helm status backend >/dev/null 2>&1; then
+        helm upgrade backend ./backend
+      else
+        helm install backend ./backend
+      fi
+    - |
+      if helm status frontend >/dev/null 2>&1; then
+        helm upgrade frontend ./frontend
+      else
+        helm install frontend ./frontend
+      fi
+    - |
+      if helm status environment >/dev/null 2>&1; then
+        helm upgrade environment ./environment
+      else
+        helm install environment ./environment
+      fi
   variables:
     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
@@ -57,6 +72,8 @@ deploy:
 
 destroy:
   stage: destroy
+  image:
+    name: hashicorp/terraform:light
   script: 
     - pwd 
     - bash cleanup.sh
