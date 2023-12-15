@@ -104,17 +104,21 @@ cleanup:
   before_script:
     - apk update
     - apk add py3-pip
+    - python3 -m venv venv
+    - . venv/bin/activate
   script:
-  - pip3 install linode-cli
+  - pip install linode-cli
   - |
     #!/bin/bash
     for nb in $(linode-cli nodebalancers list --text --no-header | awk '{print $1}'); do
       linode-cli nodebalancers delete $nb
     done
 
+  - |
+    #!/bin/bash 
     for vol in $(linode-cli volumes list --text --no-header | awk '{print $1}'); do
       linode-cli volumes delete $vol
     done
-    echo "Cleanup complete!"
+    - deactivate
   variables:
     LINODE_CLI_TOKEN: $TF_VAR_linode_token
