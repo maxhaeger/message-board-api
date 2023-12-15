@@ -12,6 +12,11 @@ vol=$(linode-cli volumes list --text --no-header | awk '{print $1}')
 linode-cli volumes delete $vol
 export KUBECONFIG=~/.kube/config.lke
 
+img=$(for image in $(linode-cli images list --text --no-header | grep private | awk '{print $1}')) ; do 
+    linode-cli images delete 
+    done
+
+
 #!/bin/bash
 set -e
 command -v linode-cli >/dev/null 2>&1 || { echo >&2 "linode-cli ist nicht installiert.  Abbruch."; exit 1; }

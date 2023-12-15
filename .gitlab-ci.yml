@@ -77,43 +77,43 @@ deploy:
     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
     LINODE_CLI_TOKEN: $TF_VAR_linode_token
 
-destroy:
-  stage: destroy
+# destroy:
+#   stage: destroy
 
-  before_script:
-  - apk update
-  script: 
-    - cd terraform
-    - terraform init
-    - terraform destroy -auto-approve
-    - echo "Infrastructure destroyed!"
-  variables:
-    AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-    AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-    TF_VAR_linode_token: $TF_VAR_linode_token
-    LINODE_CLI_TOKEN: $TF_VAR_linode_token
+#   before_script:
+#   - apk update
+#   script: 
+#     - cd terraform
+#     - terraform init
+#     - terraform destroy -auto-approve
+#     - echo "Infrastructure destroyed!"
+#   variables:
+#     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+#     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+#     TF_VAR_linode_token: $TF_VAR_linode_token
+#     LINODE_CLI_TOKEN: $TF_VAR_linode_token
 
-cleanup:
-  stage: cleanup
-  image:
-    name: alpine
-    entrypoint:
-    - /usr/bin/env
-    - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-  before_script:
-    - apk update
-    - apk add py3-pip
-  script:
-  - pip3 install linode-cli
-  - |
-    #!/bin/bash
-    for nb in $(linode-cli nodebalancers list --text --no-header | awk '{print $1}'); do
-      linode-cli nodebalancers delete $nb
-    done
+# cleanup:
+#   stage: cleanup
+#   image:
+#     name: alpine
+#     entrypoint:
+#     - /usr/bin/env
+#     - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+#   before_script:
+#     - apk update
+#     - apk add py3-pip
+#   script:
+#   - pip3 install linode-cli
+#   - |
+#     #!/bin/bash
+#     for nb in $(linode-cli nodebalancers list --text --no-header | awk '{print $1}'); do
+#       linode-cli nodebalancers delete $nb
+#     done
 
-    for vol in $(linode-cli volumes list --text --no-header | awk '{print $1}'); do
-      linode-cli volumes delete $vol
-    done
-    echo "Cleanup complete!"
-  variables:
-    LINODE_CLI_TOKEN: $TF_VAR_linode_token
+#     for vol in $(linode-cli volumes list --text --no-header | awk '{print $1}'); do
+#       linode-cli volumes delete $vol
+#     done
+#     echo "Cleanup complete!"
+#   variables:
+#     LINODE_CLI_TOKEN: $TF_VAR_linode_token
