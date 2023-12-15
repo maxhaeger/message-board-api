@@ -9,3 +9,4 @@ frontend:
   apiPort: 4567
   replica: 2
   service: mboard-api-service
+  argoport: 8080

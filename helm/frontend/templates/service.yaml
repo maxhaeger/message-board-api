@@ -7,3 +7,13 @@ spec:
     component: {{ .Values.frontend.name }}
   ports:
     - port: {{ .Values.frontend.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-server-external
+spec:
+  type: ExternalName
+  externalName: argocd-server.argocd.svc.cluster.local
+  ports:
+    - port: 8080

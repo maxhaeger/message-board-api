@@ -1,120 +1,120 @@
-default:
-  image:
-    name: hashicorp/terraform:latest
-    entrypoint:
-      - /usr/bin/env
-      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+# default:
+#   image:
+#     name: hashicorp/terraform:latest
+#     entrypoint:
+#       - /usr/bin/env
+#       - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
-  cache:
-    key: terraform
-    paths:
-      - .terraform
+#   cache:
+#     key: terraform
+#     paths:
+#       - .terraform
 
-stages:
-  - setup
-  - deploy
-  - destroy
-  - cleanup
+# stages:
+#   - setup
+#   - deploy
+#   - destroy
+#   - cleanup
 
-setup:
-  stage: setup
-  script:
-    - cd terraform
-    - terraform init
-    - terraform apply -auto-approve
-  variables:
-    AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-    AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-    TF_VAR_linode_token: $TF_VAR_linode_token
-
-deploy:
-  stage: deploy
-  image:
-    name: alpine/k8s:1.25.16 # Use a Docker image that includes Helm
-    entrypoint:
-      - /usr/bin/env
-      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-  before_script:
-    - apk update
-    - apk add py3-pip
-  script:
-    - mkdir -p ~/.kube
-    - touch ~/.kube/config.lke
-    - chmod 600 ~/.kube/config.lke
-    - pip3 install linode-cli
-    - configid=$(linode-cli lke clusters-list --text --no-header | awk '{print $1}')
-    - config=$(linode-cli lke kubeconfig-view $configid --text --no-headers | base64 -d)
-    - echo "$config" > ~/.kube/config.lke
-    - export KUBECONFIG=~/.kube/config.lke
-    - kubectl create namespace argocd || true # Add this line
-    - pwd
-    - cd ./helm
-    - |
-      if helm status backend >/dev/null 2>&1; then
-        helm upgrade backend ./backend
-      else
-        helm install backend ./backend
-      fi
-    - |
-      if helm status frontend >/dev/null 2>&1; then
-        helm upgrade frontend ./frontend
-      else
-        helm install frontend ./frontend
-      fi
-    - |
-      if helm status environment >/dev/null 2>&1; then
-        helm upgrade environment ./environment
-      else
-        helm install environment ./environment
-      fi
-    - |
-      if helm status argocd >/dev/null 2>&1; then
-        helm upgrade argocd ./argocd --namespace argocd
-      else
-        helm install argocd ./argocd --namespace argocd
-      fi
-  variables:
-    AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-    AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-    LINODE_CLI_TOKEN: $TF_VAR_linode_token
-
-# destroy:
-#   stage: destroy
-
-#   before_script:
-#   - apk update
-#   script: 
+# setup:
+#   stage: setup
+#   script:
 #     - cd terraform
 #     - terraform init
-#     - terraform destroy -auto-approve
-#     - echo "Infrastructure destroyed!"
+#     - terraform apply -auto-approve
 #   variables:
 #     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
 #     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
 #     TF_VAR_linode_token: $TF_VAR_linode_token
-#     LINODE_CLI_TOKEN: $TF_VAR_linode_token
 
-# cleanup:
-#   stage: cleanup
+# deploy:
+#   stage: deploy
 #   image:
-#     name: alpine
+#     name: alpine/k8s:1.25.16 # Use a Docker image that includes Helm
 #     entrypoint:
-#     - /usr/bin/env
-#     - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+#       - /usr/bin/env
+#       - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 #   before_script:
 #     - apk update
 #     - apk add py3-pip
 #   script:
-#   - pip3 install linode-cli
-#   - |
-#     #!/bin/bash
-#     for nb in $(linode-cli nodebalancers list --text --no-header | awk '{print $1}'); do
-#       linode-cli nodebalancers delete $nb
-#     done
-
-#     for vol in $(linode-cli volumes list --text --no-header | awk '{print $1}'); do
-#       linode-cli volumes delete $vol
-#     done
-#     echo "Cleanup complete!"
+#     - mkdir -p ~/.kube
+#     - touch ~/.kube/config.lke
+#     - chmod 600 ~/.kube/config.lke
+#     - pip3 install linode-cli
+#     - configid=$(linode-cli lke clusters-list --text --no-header | awk '{print $1}')
+#     - config=$(linode-cli lke kubeconfig-view $configid --text --no-headers | base64 -d)
+#     - echo "$config" > ~/.kube/config.lke
+#     - export KUBECONFIG=~/.kube/config.lke
+#     - kubectl create namespace argocd || true # Add this line
+#     - pwd
+#     - cd ./helm
+#     - |
+#       if helm status backend >/dev/null 2>&1; then
+#         helm upgrade backend ./backend
+#       else
+#         helm install backend ./backend
+#       fi
+#     - |
+#       if helm status frontend >/dev/null 2>&1; then
+#         helm upgrade frontend ./frontend
+#       else
+#         helm install frontend ./frontend
+#       fi
+#     - |
+#       if helm status environment >/dev/null 2>&1; then
+#         helm upgrade environment ./environment
+#       else
+#         helm install environment ./environment
+#       fi
+#     - |
+#       if helm status argocd >/dev/null 2>&1; then
+#         helm upgrade argocd ./argocd --namespace argocd
+#       else
+#         helm install argocd ./argocd --namespace argocd
+#       fi
 #   variables:
+#     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+#     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
 #     LINODE_CLI_TOKEN: $TF_VAR_linode_token
+
+destroy:
+  stage: destroy
+
+  before_script:
+  - apk update
+  script: 
+    - cd terraform
+    - terraform init
+    - terraform destroy -auto-approve
+    - echo "Infrastructure destroyed!"
+  variables:
+    AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+    TF_VAR_linode_token: $TF_VAR_linode_token
+    LINODE_CLI_TOKEN: $TF_VAR_linode_token
+
+cleanup:
+  stage: cleanup
+  image:
+    name: alpine
+    entrypoint:
+    - /usr/bin/env
+    - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+  before_script:
+    - apk update
+    - apk add py3-pip
+  script:
+  - pip3 install linode-cli
+  - |
+    #!/bin/bash
+    for nb in $(linode-cli nodebalancers list --text --no-header | awk '{print $1}'); do
+      linode-cli nodebalancers delete $nb
+    done
+
+    for vol in $(linode-cli volumes list --text --no-header | awk '{print $1}'); do
+      linode-cli volumes delete $vol
+    done
+    echo "Cleanup complete!"
+  variables:
+    LINODE_CLI_TOKEN: $TF_VAR_linode_token
