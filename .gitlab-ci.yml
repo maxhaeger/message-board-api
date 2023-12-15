@@ -73,13 +73,9 @@ deploy:
 
 destroy:
   stage: destroy
-  image:
-    name: hashicorp/terraform:light
 
   before_script:
   - apk update
-  - apk add py3-pip
-  - pip3 install linode-cli
   script: 
     - cd terraform
     - terraform init
