@@ -1,20 +1,20 @@
-# default:
-#   image:
-#     name: hashicorp/terraform:latest
-#     entrypoint:
-#       - /usr/bin/env
-#       - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+default:
+  image:
+    name: hashicorp/terraform:latest
+    entrypoint:
+      - /usr/bin/env
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
-#   cache:
-#     key: terraform
-#     paths:
-#       - .terraform
+  cache:
+    key: terraform
+    paths:
+      - .terraform
 
-# stages:
-#   - setup
-#   - deploy
-#   - destroy
-#   - cleanup
+stages:
+  - setup
+  - deploy
+  - destroy
+  - cleanup
 
 # setup:
 #   stage: setup
