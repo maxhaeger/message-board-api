@@ -78,21 +78,21 @@ deploy:
     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
     LINODE_CLI_TOKEN: $TF_VAR_linode_token
 
-destroy:
-  stage: destroy
+# destroy:
+#   stage: destroy
 
-  before_script:
-  - apk update
-  script: 
-    - cd terraform
-    - terraform init
-    - terraform destroy -auto-approve
-    - echo "Infrastructure destroyed!"
-  variables:
-    AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-    AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-    TF_VAR_linode_token: $TF_VAR_linode_token
-    LINODE_CLI_TOKEN: $TF_VAR_linode_token
+#   before_script:
+#   - apk update
+#   script: 
+#     - cd terraform
+#     - terraform init
+#     - terraform destroy -auto-approve
+#     - echo "Infrastructure destroyed!"
+#   variables:
+#     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+#     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+#     TF_VAR_linode_token: $TF_VAR_linode_token
+#     LINODE_CLI_TOKEN: $TF_VAR_linode_token
 
 # cleanup:
 #   stage: cleanup
