@@ -7,6 +7,6 @@ for vol in $(linode-cli volumes list --text --no-header | awk '{print $1}'); do
     linode-cli volumes delete $vol
 done
 
-for image in $(linode-cli images list --text --no-header | grep private | awk '{print $1}')) | sed "s/private\///" ; do 
-    linode-cli images delete 
+for image in $(linode-cli images list --text --no-header | grep private | awk '{print $1}') ; do 
+    linode-cli images delete $image
 done
