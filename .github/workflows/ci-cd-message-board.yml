@@ -1,26 +1,44 @@
 name: Terraform Workflow
 
-on: [push, pull_request]
-
-env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  TF_VAR_linode_token: ${{ secrets.TF_VAR_linode_token }}
-  LINODE_CLI_TOKEN: ${{ secrets.LINODE_TOKEN }}
+on:
+  workflow_dispatch: 
+  push:
+  pull_request:
 
 jobs:
-  setup:
+  terraform:
+    name: 'Terraform'
     runs-on: ubuntu-latest
-    container:
-      image: hashicorp/terraform:latest
+    environment: production
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./terraform
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Setup Terraform
-        run: |
-          cd terraform
-          terraform init
-          terraform apply -auto-approve
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Setup Terraform CLI
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false
 
   deploy:
     needs: setup
@@ -49,17 +67,17 @@ jobs:
           helm install environment ./environment
           kubectl get svc -l app.kubernetes.io/name=ingress-nginx -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}'
 
-  destroy:
-    needs: deploy
-    runs-on: ubuntu-latest
-    container:
-      image: hashicorp/terraform:latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Destroy
-        run: |
-          cd terraform
-          terraform init
-          terraform destroy -auto-approve
-          echo "Infrastructure destroyed!"
+  # destroy:
+  #   needs: deploy
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: hashicorp/terraform:latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
+  #     - name: Destroy
+  #       run: |
+  #         cd terraform
+  #         terraform init
+  #         terraform destroy -auto-approve
+  #         echo "Infrastructure destroyed!"
