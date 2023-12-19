@@ -27,6 +27,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
+          LINODE_CLI_TOKEN: ${{ secrets.LINODE_CLI_TOKEN }}
 
       - name: Setup Terraform CLI
         uses: hashicorp/setup-terraform@v2
