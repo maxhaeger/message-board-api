@@ -41,7 +41,7 @@ jobs:
         run: terraform apply -auto-approve -input=false
 
   deploy:
-    needs: setup
+    needs: terraform
     runs-on: ubuntu-latest
     container:
       image: alpine/k8s:1.25.16
