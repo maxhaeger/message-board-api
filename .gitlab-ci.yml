@@ -46,7 +46,6 @@ deploy:
     - config=$(linode-cli lke kubeconfig-view $configid --text --no-headers | base64 -d)
     - echo "$config" > ~/.kube/config.lke
     - export KUBECONFIG=~/.kube/config.lke
-    # - kubectl create namespace argocd || true
     - pwd
     - cd ./helm
     - |
@@ -67,12 +66,12 @@ deploy:
       else
         helm install environment ./environment
       fi
-    # - |
-    #   if helm status argocd >/dev/null 2>&1; then
-    #     helm upgrade argocd ./argocd --namespace argocd
-    #   else
-    #     helm install argocd ./argocd --namespace argocd
-    #   fi
+    - |
+      kubectl create namespace argocd
+      kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+
+
   variables:
     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
