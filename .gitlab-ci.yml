@@ -67,7 +67,9 @@ deploy:
         helm install environment ./environment
       fi
     - |
-      kubectl create namespace argocd
+      if ! kubectl get namespace argocd >/dev/null 2>&1; then
+        kubectl create namespace argocd
+      fi
       kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 
