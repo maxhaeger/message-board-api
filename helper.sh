@@ -15,17 +15,14 @@ export KUBECONFIG=~/.kube/config.lke
 img=$(for image in $(linode-cli images list --text --no-header | grep private | awk '{print $1}')) ; do 
     linode-cli images delete 
     done
-
-
 #!/bin/bash
-set -e
-command -v linode-cli >/dev/null 2>&1 || { echo >&2 "linode-cli ist nicht installiert.  Abbruch."; exit 1; }
-command -v base64 >/dev/null 2>&1 || { echo >&2 "base64 ist nicht installiert.  Abbruch."; exit 1; }
 
 configid=$(linode-cli lke clusters-list --text --no-header | awk '{print $1}')
 config=$(linode-cli lke kubeconfig-view $configid --text --no-headers | base64 -d)
 
 # Verwenden einer temporären Datei
-tempfile=$(mktemp)
-echo "$config" > $tempfile
-export KUBECONFIG=$tempfile
+temp=/tmp/kubeconfig-cloud.yaml
+echo "$config" > $temp
+export KUBECONFIG=$temp
+# Retrieve Argopassword
+ gcloud container clusters get-credentials gke-cluster --zone europe-west3-a --project message-board-api-408908

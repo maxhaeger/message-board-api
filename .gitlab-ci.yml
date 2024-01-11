@@ -62,16 +62,7 @@ deploy:
       fi
     - |
       if helm status environment >/dev/null 2>&1; then
-        helm upgrade environment ./environment
-      else
-        helm install environment ./environment
-      fi
-    - |
-      if ! kubectl get namespace argocd >/dev/null 2>&1; then
-        kubectl create namespace argocd
-      fi
-      kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-
+        helm upgrade environment
 
 
   variables:

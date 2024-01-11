@@ -8,6 +8,11 @@ terraform {
       source  = "hashicorp/aws"
       version = "~>4.16" #
     }
+
+    gcp = {
+      source  = "hashicorp/gcp"
+      version = "~>3.0"
+    }
   }
   backend "s3" {
     bucket = "linode-lke-cluster-terraform-state"
