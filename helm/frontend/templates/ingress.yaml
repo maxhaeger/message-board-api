@@ -18,4 +18,16 @@ spec:
               service:
                 name: {{ .Values.frontend.service }}
                 port:
+<<<<<<< HEAD
                   number: {{ .Values.frontend.apiPort }}
+=======
+                  number: {{ .Values.frontend.apiPort }}
+          - path: /argocd/
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server-external
+                port:
+                  number: {{ .Values.frontend.argoport }}
+                namespace: argocd 
+>>>>>>> ad681af6bd7b7a05066d76cd4f0fe905f5f7c65d

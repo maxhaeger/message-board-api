@@ -1,0 +1,91 @@
+# name: Terraform Workflow
+
+# on:
+#   workflow_dispatch:
+#   push:
+#   pull_request:
+
+# permissions:
+#   contents: read
+
+# jobs:
+#   terraform:
+#     name: 'Terraform'
+#     runs-on: ubuntu-latest
+#     environment: production
+#     if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+
+#     defaults:
+#       run:
+#         shell: bash
+#         working-directory: ./terraform
+
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
+
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: eu-central-1
+
+#       - name: Setup Linode cli
+#         uses: brendon1555/setup-linode-cli@master
+#         with:
+#           LINODE_CLI_TOKEN: ${{ secrets.LINODE_CLI_TOKEN }}
+
+#       - name: Setup Terraform CLI
+#         uses: hashicorp/setup-terraform@v2
+
+#       - name: Terraform Init
+#         run: terraform init
+
+#       - name: Terraform Plan
+#         run: terraform plan
+
+#       - name: Terraform Apply
+#         run: terraform apply -auto-approve -input=false
+
+#   deploy:
+#     needs: terraform
+#     runs-on: ubuntu-latest
+#     container:
+#       image: alpine/k8s:1.25.16
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+#       - name: Deploy
+#         run: |
+#           apk update
+#           apk add py3-pip
+#           mkdir -p ~/.kube
+#           touch ~/.kube/config.lke
+#           chmod 600 ~/.kube/config.lke
+#           pip3 install linode-cli
+#           configid=$(linode-cli lke clusters-list --text --no-header | awk '{print $1}')
+#           config=$(linode-cli lke kubeconfig-view $configid --text --no-headers | base64 -d)
+#           echo "$config" > ~/.kube/config.lke
+#           export KUBECONFIG=~/.kube/config.lke
+#           pwd
+#           cd ./helm
+#           helm install backend ./backend
+#           helm install frontend ./frontend
+#           helm install environment ./environment
+#           kubectl get svc -l app.kubernetes.io/name=ingress-nginx -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}'
+
+#   # destroy:
+#   #   needs: deploy
+#   #   runs-on: ubuntu-latest
+#   #   container:
+#   #     image: hashicorp/terraform:latest
+#   #   steps:
+#   #     - name: Checkout code
+#   #       uses: actions/checkout@v2
+#   #     - name: Destroy
+#   #       run: |
+#   #         cd terraform
+#   #         terraform init
+#   #         terraform destroy -auto-approve
+#   #         echo "Infrastructure destroyed!"

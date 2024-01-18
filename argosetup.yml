@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: messageboard-backend
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/maxhaeger/message-board-api
+    targetRevision: main
+    path: helm/backend
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: messageboard-frontend
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/maxhaeger/message-board-api
+    targetRevision: main
+    path: helm/backend
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: messageboard-environment
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/maxhaeger/message-board-api
+    targetRevision: main
+    path: helm/backend
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
