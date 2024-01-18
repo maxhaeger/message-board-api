@@ -7,3 +7,5 @@ frontend:
   volume: website-data
   port: 80
   replica: 2
+  apiPort: 4567
+  service: mboard-api-service
