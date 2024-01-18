@@ -6,13 +6,6 @@ frontend:
   imagetag2: 2.4
   volume: website-data
   port: 80
-<<<<<<< HEAD
   replica: 2
   apiPort: 4567
   service: mboard-api-service
-=======
-  apiPort: 4567
-  replica: 2
-  service: mboard-api-service
-  argoport: 8080
->>>>>>> ad681af6bd7b7a05066d76cd4f0fe905f5f7c65d
