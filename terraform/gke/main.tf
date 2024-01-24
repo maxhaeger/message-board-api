@@ -20,22 +20,22 @@ terraform {
   }
 }
 provider "google" {
-  credentials = file("message-board-api-408908-8cfd35fd79b0.json")
+  credentials = file("message-board-api-408908-dd8075676822.json")
   project     = "message-board-api-408908"
   region      = "eu-central1"
 }
 
 
-resource "google_compute_network" "vpc_network" {
+resource "google_compute_network" "gke-network" {
   project                 = "message-board-api-408908"
-  name                    = "vpc-network"
+  name                    = "gke-network"
   auto_create_subnetworks = true
   mtu                     = 1460
 }
 
 resource "google_container_cluster" "primary" {
   name     = "gke-cluster"
-  network  = google_compute_network.vpc_network.self_link
+  network  = google_compute_network.gke-network.self_link
   location = "europe-west3-a"
   node_pool {
     name               = "default-pool"

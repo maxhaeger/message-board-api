@@ -7,16 +7,3 @@ spec:
     component: {{ .Values.frontend.name }}
   ports:
     - port: {{ .Values.frontend.port }}
-<<<<<<< HEAD
-=======
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: argocd-server-external
-spec:
-  type: ExternalName
-  externalName: argocd-server.argocd.svc.cluster.local
-  ports:
-    - port: 8080
->>>>>>> ad681af6bd7b7a05066d76cd4f0fe905f5f7c65d
