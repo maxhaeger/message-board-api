@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Values.frontend.name }}-deployment"
+spec:
+  replicas: {{ .Values.frontend.replica }}
+  selector:
+    matchLabels:
+      component: {{ .Values.frontend.name }}
+  template:
+    metadata:
+      labels:
+        component: {{ .Values.frontend.name }}
+    spec:
+      initContainers:
+        - name: code-loader
+          image: "{{ .Values.frontend.imagename1 }}:{{ .Values.frontend.imagetag1 }}"
+          command:
+            - git
+          args:
+            - clone
+            - https://github.com/johnnyb/k8s-example-frontend.git
+            - /tmp/code/
+          volumeMounts:
+            - name: {{ .Values.frontend.volume }}
+              mountPath: /tmp/code
+      containers:
+        - name: webserver
+          image: "{{.Values.frontend.imagename2}}:{{.Values.frontend.imagetag2}}"
+          ports:
+            - containerPort: {{ .Values.frontend.port }}
+          volumeMounts:
+            - name: {{ .Values.frontend.volume }}
+              mountPath: /usr/local/apache2/htdocs
+      volumes:
+        - name: {{ .Values.frontend.volume }}
+          emptyDir: {}

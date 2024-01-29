@@ -1,0 +1,19 @@
+api:
+  name: mboard-api
+  port: 4567
+  image:
+    name: maaqz/mgross
+    tag: 1.0.0
+
+cache:
+  name: memcache
+  imagename: memcached
+  imagetag: 1.6
+  port: 11211
+
+database:
+  name: database
+  vendor: postgres
+  imagename: postgres
+  imagetag: 14
+  port: 5432

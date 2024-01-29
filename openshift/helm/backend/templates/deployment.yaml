@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Values.api.name }}-deployment"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: {{ .Values.api.name }}
+  template:
+    metadata:
+      labels:
+        component: {{ .Values.api.name }}
+    spec:
+      containers:
+        - name: "{{ .Values.api.name }}-container"
+          image: "{{ .Values.api.image.name }}:{{ .Values.api.image.tag}}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 4567
+          env:
+            - name: APP_ENV
+              value: production
+            - name: PG_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: "{{ .Values.api.name }}-config"
+                  key: pg-host
+            - name: PG_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: password
+            - name: PG_CONN_STR
+              value: "host=$(PG_HOST) user=postgres password=$(PG_PASS)"
+            - name: CACHE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: "{{ .Values.api.name }}-config"
+                  key: cache-host
+            - name: CACHE_CONN_STR
+              value: "$(CACHE_HOST):11211"
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: "{{ .Values.cache.name }}-deployment"
+spec:
+  selector:
+    matchLabels:
+      component: {{ .Values.cache.name }}
+  template:
+    metadata:
+      labels:
+        component: {{ .Values.cache.name }}
+    spec:
+      containers:
+        - name: memcache
+          image: "{{ .Values.cache.imagename }}:{{ .Values.cache.imagetag}}"
+          ports:
+            - containerPort: {{ .Values.cache.port }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Values.database.name }}-deployment"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: {{ .Values.database.name }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        component: {{ .Values.database.name }}
+    spec:
+      containers:
+        - name: {{ .Values.database.vendor }}
+          image: "{{ .Values.database.imagename }}:{{ .Values.database.imagetag }}"
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.database.name }}-secret"
+                  key: password
+                  optional: false
+            - name: PGDATA
+              value: /mnt/data/pgdata
+          volumeMounts:
+            - name: "{{ .Values.database.name }}-data-volume"
+              mountPath: /mnt/data
+          ports:
+            - containerPort: {{ .Values.database.port }}
+      volumes:
+        - name: "{{ .Values.database.name }}-data-volume"
+          persistentVolumeClaim:
+            claimName: "{{ .Values.database.name }}-volume-claim"
