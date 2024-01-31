@@ -5,7 +5,7 @@ frontend:
   imagename2: httpd
   imagetag2: 2.4
   volume: website-data
-  port: 80
+  port: 8080
   replica: 2
   apiPort: 4567
   service: mboard-api-service

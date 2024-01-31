@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: main-ingress
 spec:
-  ingressClassName: nginx
+  # ingressClassName: nginx
   defaultBackend:
     service:
       name: "{{ .Values.frontend.name }}-service"

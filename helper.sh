@@ -26,3 +26,5 @@ echo "$config" > $temp
 export KUBECONFIG=$temp
 # Retrieve Argopassword
  gcloud container clusters get-credentials gke-cluster --zone europe-west3-a --project message-board-api-408908
+# retrive argo password
+ echo "$(k get secret argocd-initial-admin-secret -n argocd -o=json | jq .data.password | tr -d '\"' | base64 -d)"
