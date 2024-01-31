@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/maxhaeger/message-board-api
-    targetRevision: main
+    targetRevision: feature/keycloak
     path: helm/backend
   destination:
     server: https://kubernetes.default.svc
@@ -26,7 +26,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/maxhaeger/message-board-api
-    targetRevision: main
+    targetRevision: feature/keycloak
     path: helm/backend
   destination:
     server: https://kubernetes.default.svc
@@ -45,7 +45,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/maxhaeger/message-board-api
-    targetRevision: main
+    targetRevision: feature/keycloak
     path: helm/backend
   destination:
     server: https://kubernetes.default.svc
