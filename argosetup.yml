@@ -12,10 +12,10 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: default
-  syncPolicy:
-    automated: 
-      prune: true
-      selfHeal: true
+  # syncPolicy:
+  #   automated: 
+  #     prune: true
+  #     selfHeal: true
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -27,14 +27,14 @@ spec:
   source:
     repoURL: https://github.com/maxhaeger/message-board-api
     targetRevision: feature/keycloak
-    path: helm/backend
+    path: helm/frontend
   destination:
     server: https://kubernetes.default.svc
     namespace: default
-  syncPolicy:
-    automated: 
-      prune: true
-      selfHeal: true
+  # syncPolicy:
+  #   automated: 
+  #     prune: true
+  #     selfHeal: true
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -50,7 +50,7 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: default
-  syncPolicy:
-    automated: 
-      prune: true
-      selfHeal: true
+  # syncPolicy:
+  #   automated: 
+  #     prune: true
+  #     selfHeal: true

@@ -28,3 +28,5 @@ export KUBECONFIG=$temp
  gcloud container clusters get-credentials gke-cluster --zone europe-west3-a --project message-board-api-408908
 # retrive argo password
  echo "$(k get secret argocd-initial-admin-secret -n argocd -o=json | jq .data.password | tr -d '\"' | base64 -d)"
+
+ kubectl port-forward svc/argocd-server -n argocd 8080:443
