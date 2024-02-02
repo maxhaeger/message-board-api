@@ -3,7 +3,7 @@ api:
   port: 4567
   image:
     name: maaqz/mgross
-    tag: 1.0.0
+    tag: 1.0.1
 
 cache:
   name: memcache

@@ -27,7 +27,7 @@ spec:
   source:
     repoURL: https://github.com/maxhaeger/message-board-api
     targetRevision: feature/keycloak
-    path: helm/backend
+    path: helm/frontend
   destination:
     server: https://kubernetes.default.svc
     namespace: default
@@ -54,3 +54,4 @@ spec:
   #   automated: 
   #     prune: true
   #     selfHeal: true
+
