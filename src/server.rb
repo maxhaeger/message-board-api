@@ -19,7 +19,7 @@ end
 # Connect to memcache (autoreconnects automatically)
 cache = Dalli::Client.new(ENV["CACHE_CONN_STR"])
 
-get "/api/messages/list" do
+get "/apiv1/messages/list" do
 	content_type 'application/json'
 	data = cache.fetch("message-list", 15) do
 		with_db do |db|
@@ -29,7 +29,7 @@ get "/api/messages/list" do
 	return data
 end
 
-post "/api/messages/create" do
+post "/apiv1/messages/create" do
 	content_type 'application/json'
 	with_db do |db|
 		db.exec(
