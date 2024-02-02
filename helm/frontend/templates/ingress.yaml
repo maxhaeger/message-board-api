@@ -10,7 +10,7 @@ spec:
       port:
         number: {{ .Values.frontend.port}}
   rules:
-    - http:
+     - http:
         paths: 
           - path: /api/
             pathType: Prefix
